@@ -5,6 +5,8 @@ import FarmerOrders from "./pages/FarmerOrders";
 import CustomerLogin from "./pages/CustomerLogin";
 import CustomerRegister from "./pages/CustomerRegister";
 import CustomerDashboard from "./pages/CustomerDashboard";
+import AdminLogin from "./pages/AdminLogin";
+import AdminDashboard from "./pages/AdminDashboard";
 
 import FarmerLogin from "./pages/FarmerLogin";
 import FarmerRegister from "./pages/FarmerRegister";
@@ -27,6 +29,10 @@ function AppRoutes() {
       <Route path="/customer-login" element={<CustomerLogin />} />
       <Route path="/customer-register" element={<CustomerRegister />} />
       <Route path="/customer-dashboard" element={<CustomerDashboard />} />
+
+      {/* ADMIN */}
+      <Route path="/admin-login" element={<AdminLogin />} />
+      <Route path="/admin-dashboard" element={<AdminDashboard />} />
 
       {/* FARMER */}
       <Route path="/farmer-login" element={<FarmerLogin />} />

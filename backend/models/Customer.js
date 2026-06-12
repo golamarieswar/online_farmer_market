@@ -38,12 +38,19 @@ const customerSchema = new mongoose.Schema(
       default: true,
     },
     password: {
-  type: String,
-  required: true,
-},
+      type: String,
+      required: true,
+      select: false,
+    },
   },
   {
     timestamps: true,
+    toJSON: {
+      transform: (doc, ret) => {
+        delete ret.password;
+        return ret;
+      },
+    },
   }
 );
 

@@ -1,17 +1,14 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import API, { authHeader } from "../services/api";
 
 function Cart() {
   const [cart, setCart] = useState([]);
+  const [deliveryAddress, setDeliveryAddress] = useState("");
 
   useEffect(() => {
-    loadCart();
-  }, []);
-
-  const loadCart = () => {
     const data = JSON.parse(localStorage.getItem("cart")) || [];
     setCart(data);
-  };
+  }, []);
 
   const removeItem = (id) => {
     const updated = cart.filter((item) => item._id !== id);
@@ -34,21 +31,22 @@ function Cart() {
       return;
     }
 
+    if (!deliveryAddress.trim()) {
+      alert("Delivery address is required");
+      return;
+    }
+
     try {
       for (let item of cart) {
-        await axios.post(
-          "http://localhost:5000/api/order/place",
+        await API.post(
+          "/api/order/place",
           {
             productId: item._id,
             quantity: item.quantity,
-            deliveryAddress: "Default Address",
+            deliveryAddress,
             paymentMethod: "cod",
           },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
+          { headers: authHeader() }
         );
       }
 
@@ -64,39 +62,59 @@ function Cart() {
   };
 
   return (
-    <div className="container mt-5">
-      <h2>My Cart</h2>
+    <div className="container page-section">
+      <div className="page-header">
+        <div>
+          <span className="eyebrow">Checkout</span>
+          <h2>My Cart</h2>
+        </div>
+      </div>
 
       {cart.length === 0 ? (
-        <h4>Cart is Empty</h4>
+        <div className="empty-state">
+          <h4>Cart is empty</h4>
+          <p>Add products from the marketplace to place an order.</p>
+        </div>
       ) : (
-        <>
-          {cart.map((item) => (
-            <div key={item._id} className="card p-3 mb-2">
-              <h5>{item.productName}</h5>
-              <p>₹ {item.price}</p>
-              <p>Qty: {item.quantity}</p>
+        <div className="checkout-grid">
+          <div>
+            {cart.map((item) => (
+              <div key={item._id} className="card cart-row">
+                <div>
+                  <h5>{item.productName}</h5>
+                  <p>₹ {item.price} x {item.quantity}</p>
+                </div>
 
-              <button
-                className="btn btn-danger btn-sm"
-                onClick={() => removeItem(item._id)}
-              >
-                Remove
-              </button>
-            </div>
-          ))}
+                <button
+                  className="btn btn-outline-danger btn-sm"
+                  onClick={() => removeItem(item._id)}
+                >
+                  Remove
+                </button>
+              </div>
+            ))}
+          </div>
 
-          <hr />
+          <aside className="card checkout-summary">
+            <span className="eyebrow">Order Summary</span>
+            <h4>Total: ₹ {getTotal()}</h4>
 
-          <h4>Total: ₹ {getTotal()}</h4>
+            <textarea
+              className="form-control mt-3"
+              placeholder="Delivery address"
+              value={deliveryAddress}
+              onChange={(event) => setDeliveryAddress(event.target.value)}
+              required
+            />
 
-          <button
-            className="btn btn-success mt-3"
-            onClick={placeOrderFromCart}
-          >
-            Place Order
-          </button>
-        </>
+            <button
+              className="btn btn-success mt-3 w-100"
+              onClick={placeOrderFromCart}
+            >
+              Place COD Order
+            </button>
+          </aside>
+        </div>
       )}
     </div>
   );

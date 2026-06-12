@@ -18,25 +18,9 @@ const authMiddleware = require(
 const upload = require(
   "../middleware/uploadMiddleware"
 );
+const validateObjectId = require("../middleware/validateObjectId");
 
-/*
-Customer
-*/
-
-router.get(
-  "/all",
-  getApprovedProducts
-);
-
-router.get(
-  "/search",
-  searchProducts
-);
-
-router.get(
-  "/:id",
-  getProductById
-);
+router.param("id", validateObjectId);
 
 /*
 Farmer
@@ -66,6 +50,25 @@ router.delete(
   "/delete/:id",
   authMiddleware,
   deleteProduct
+);
+
+/*
+Customer
+*/
+
+router.get(
+  "/all",
+  getApprovedProducts
+);
+
+router.get(
+  "/search",
+  searchProducts
+);
+
+router.get(
+  "/:id",
+  getProductById
 );
 
 module.exports = router;

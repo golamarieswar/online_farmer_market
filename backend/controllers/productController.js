@@ -1,5 +1,9 @@
 const Product = require("../models/Product");
 const Farmer = require("../models/Farmer");
+const path = require("path");
+
+const productImagePath = (file) =>
+  path.posix.join("uploads", "products", file.filename);
 
 /*
 ADD PRODUCT
@@ -51,9 +55,9 @@ exports.addProduct = async (req, res) => {
       productName,
       description,
       category,
-      price,
-      quantity,
-      productImage: req.file.path,
+      price: Number(price),
+      quantity: Number(quantity),
+      productImage: productImagePath(req.file),
 
       verificationStatus: "pending",
       isAvailable: false,
@@ -267,11 +271,10 @@ exports.updateProduct = async (
         product.category,
 
       price:
-        req.body.price || product.price,
+        req.body.price ? Number(req.body.price) : product.price,
 
       quantity:
-        req.body.quantity ||
-        product.quantity,
+        req.body.quantity ? Number(req.body.quantity) : product.quantity,
 
       verificationStatus: "pending",
       isAvailable: false,
@@ -279,7 +282,7 @@ exports.updateProduct = async (
 
     if (req.file) {
       updatedData.productImage =
-        req.file.path;
+        productImagePath(req.file);
     }
 
     const updatedProduct =

@@ -119,6 +119,27 @@ app.use((req, res) => {
     message: "Route Not Found",
   });
 });
+
+app.use((error, req, res, next) => {
+  if (error.name === "MulterError") {
+    return res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+
+  if (error.message?.includes("Only JPG")) {
+    return res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+
+  return res.status(500).json({
+    success: false,
+    message: "Internal server error",
+  });
+});
 /*
 ==========================
 START SERVER

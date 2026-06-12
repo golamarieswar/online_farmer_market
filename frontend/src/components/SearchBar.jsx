@@ -8,8 +8,9 @@ const SearchBar = ({ onSearch }) => {
   };
 
   return (
-    <div>
+    <div className="search-bar">
       <input
+        className="form-control"
         type="text"
         placeholder="Search products..."
         value={keyword}
@@ -18,7 +19,7 @@ const SearchBar = ({ onSearch }) => {
         }
       />
 
-      <button onClick={handleClick}>
+      <button className="btn btn-success" onClick={handleClick}>
         Search
       </button>
     </div>

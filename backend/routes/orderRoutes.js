@@ -19,6 +19,9 @@ const authMiddleware = require(
 const adminMiddleware = require(
   "../middleware/adminMiddleware"
 );
+const validateObjectId = require("../middleware/validateObjectId");
+
+router.param("id", validateObjectId);
 
 /*
 Customer
@@ -65,16 +68,6 @@ router.put(
 );
 
 /*
-Shared
-*/
-
-router.get(
-  "/:id",
-  authMiddleware,
-  getOrderById
-);
-
-/*
 Admin
 */
 
@@ -82,6 +75,16 @@ router.get(
   "/admin/all",
   adminMiddleware,
   getAllOrders
+);
+
+/*
+Shared
+*/
+
+router.get(
+  "/:id",
+  authMiddleware,
+  getOrderById
 );
 
 module.exports = router;

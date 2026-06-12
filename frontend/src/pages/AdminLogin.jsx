@@ -1,6 +1,6 @@
 import { useState } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import API from "../services/api";
 
 function AdminLogin() {
   const navigate = useNavigate();
@@ -14,10 +14,7 @@ function AdminLogin() {
     e.preventDefault();
 
     try {
-      const res = await axios.post(
-        "http://localhost:5000/api/admin/login",
-        form
-      );
+      const res = await API.post("/api/admin/login", form);
 
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("role", "admin");
@@ -31,10 +28,11 @@ function AdminLogin() {
   };
 
   return (
-    <div className="container mt-5">
+    <div className="container auth-page">
+      <span className="eyebrow">Admin access</span>
       <h2>Admin Login</h2>
 
-      <form onSubmit={login}>
+      <form onSubmit={login} className="card form-card">
         <input
           className="form-control mb-2"
           placeholder="Email"
@@ -52,7 +50,7 @@ function AdminLogin() {
           }
         />
 
-        <button className="btn btn-dark">Login</button>
+        <button className="btn btn-dark w-100">Login</button>
       </form>
     </div>
   );

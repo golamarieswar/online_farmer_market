@@ -15,6 +15,9 @@ const {
 const adminMiddleware = require(
   "../middleware/adminMiddleware"
 );
+const validateObjectId = require("../middleware/validateObjectId");
+
+router.param("id", validateObjectId);
 
 /*
 Admin Login

@@ -1,6 +1,6 @@
 import { useState } from "react";
-import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
+import API from "../services/api";
 
 function CustomerLogin() {
   const navigate = useNavigate();
@@ -14,12 +14,10 @@ function CustomerLogin() {
     e.preventDefault();
 
     try {
-      const res = await axios.post(
-        "http://localhost:5000/api/auth/login/customer",
-        form
-      );
+      const res = await API.post("/api/auth/login/customer", form);
 
       localStorage.setItem("token", res.data.token);
+      localStorage.setItem("role", "customer");
 
       navigate("/customer-dashboard");
     } catch (err) {
@@ -31,10 +29,11 @@ function CustomerLogin() {
   };
 
   return (
-    <div className="container mt-5">
+    <div className="container auth-page">
+      <span className="eyebrow">Customer access</span>
       <h2>Customer Login</h2>
 
-      <form onSubmit={login}>
+      <form onSubmit={login} className="card form-card">
         <input
           className="form-control mb-3"
           placeholder="Email"
@@ -59,7 +58,7 @@ function CustomerLogin() {
           }
         />
 
-        <button className="btn btn-success">
+        <button className="btn btn-success w-100">
           Login
         </button>
       </form>
@@ -76,5 +75,3 @@ function CustomerLogin() {
 }
 
 export default CustomerLogin;
-
-

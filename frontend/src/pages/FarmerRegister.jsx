@@ -1,6 +1,6 @@
 import { useState } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import API from "../services/api";
 
 function FarmerRegister() {
   const navigate = useNavigate();
@@ -40,10 +40,7 @@ function FarmerRegister() {
     );
 
     try {
-      await axios.post(
-        "http://localhost:5000/api/auth/register/farmer",
-        data
-      );
+      await API.post("/api/auth/register/farmer", data);
 
       alert(
         "Registration submitted for verification"
@@ -59,14 +56,15 @@ function FarmerRegister() {
   };
 
   return (
-    <div className="container mt-5">
+    <div className="container page-section form-page">
+      <span className="eyebrow">Seller onboarding</span>
       <h2>Farmer Registration</h2>
 
-      <p className="text-danger">
+      <p className="text-muted">
         Only Non-Perishable Goods Allowed
       </p>
 
-      <form onSubmit={submit}>
+      <form onSubmit={submit} className="card form-card">
         <input
           className="form-control mb-3"
           placeholder="Full Name"
@@ -161,8 +159,8 @@ function FarmerRegister() {
           }
         />
 
-        <button className="btn btn-primary">
-          Register
+        <button className="btn btn-success">
+          Submit Application
         </button>
       </form>
     </div>

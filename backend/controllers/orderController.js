@@ -17,6 +17,15 @@ exports.placeOrder = async (req, res) => {
       paymentMethod,
     } = req.body;
 
+    const orderedQuantity = Number(quantity);
+
+    if (!productId || !orderedQuantity || orderedQuantity < 1 || !deliveryAddress) {
+      return res.status(400).json({
+        success: false,
+        message: "Product, quantity and delivery address are required",
+      });
+    }
+
     const product = await Product.findById(productId);
 
     if (!product) {
@@ -36,7 +45,7 @@ exports.placeOrder = async (req, res) => {
       });
     }
 
-    if (product.quantity < quantity) {
+    if (product.quantity < orderedQuantity) {
       return res.status(400).json({
         success: false,
         message: "Insufficient stock",
@@ -65,14 +74,14 @@ exports.placeOrder = async (req, res) => {
     }
 
     const totalAmount =
-      Number(product.price) * Number(quantity);
+      Number(product.price) * orderedQuantity;
 
     const order = await Order.create({
       customerId,
       farmerId: product.farmerId,
       productId: product._id,
 
-      quantity,
+      quantity: orderedQuantity,
       unitPrice: product.price,
       totalAmount,
 
@@ -94,7 +103,7 @@ exports.placeOrder = async (req, res) => {
     */
 
     product.quantity =
-      product.quantity - quantity;
+      product.quantity - orderedQuantity;
 
     if (product.quantity <= 0) {
       product.quantity = 0;

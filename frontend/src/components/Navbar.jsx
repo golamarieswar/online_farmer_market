@@ -2,54 +2,79 @@ import { Link, useNavigate } from "react-router-dom";
 
 function Navbar() {
   const navigate = useNavigate();
+  const token = localStorage.getItem("token");
+  const role = localStorage.getItem("role");
 
   const logout = () => {
     localStorage.removeItem("token");
-    localStorage.removeItem("adminToken");
+    localStorage.removeItem("role");
+    localStorage.removeItem("cart");
 
     navigate("/");
   };
 
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark bg-success">
+    <nav className="navbar navbar-expand-lg app-nav">
       <div className="container">
 
         <Link
           className="navbar-brand"
           to="/"
         >
-          Online Farmers Market
+          FarmLink Market
         </Link>
 
-        <div className="ms-auto">
+        <div className="ms-auto nav-actions">
+          {!token && (
+            <>
+              <Link className="btn btn-outline-success" to="/customer-login">
+                Customer
+              </Link>
+              <Link className="btn btn-success" to="/farmer-login">
+                Farmer
+              </Link>
+            </>
+          )}
 
-          <Link
-            className="btn btn-light me-2"
-            to="/customer-dashboard"
-          >
-            Products
-          </Link>
+          {role === "customer" && (
+            <>
+              <Link className="btn btn-outline-success" to="/customer-dashboard">
+                Products
+              </Link>
+              <Link className="btn btn-outline-success" to="/cart">
+                Cart
+              </Link>
+              <Link className="btn btn-outline-success" to="/orders">
+                Orders
+              </Link>
+            </>
+          )}
 
-          <Link
-            className="btn btn-light me-2"
-            to="/cart"
-          >
-            Cart
-          </Link>
+          {role === "farmer" && (
+            <>
+              <Link className="btn btn-outline-success" to="/farmer-dashboard">
+                Dashboard
+              </Link>
+              <Link className="btn btn-outline-success" to="/farmer-orders">
+                Orders
+              </Link>
+            </>
+          )}
 
-          <Link
-            className="btn btn-light me-2"
-            to="/orders"
-          >
-            Orders
-          </Link>
+          {role === "admin" && (
+            <Link className="btn btn-outline-success" to="/admin-dashboard">
+              Admin
+            </Link>
+          )}
 
-          <button
-            className="btn btn-danger"
-            onClick={logout}
-          >
-            Logout
-          </button>
+          {token && (
+            <button
+              className="btn btn-outline-danger"
+              onClick={logout}
+            >
+              Logout
+            </button>
+          )}
 
         </div>
       </div>

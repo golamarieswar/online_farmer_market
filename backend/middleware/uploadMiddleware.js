@@ -2,19 +2,22 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 
+const uploadRoot = path.join(__dirname, "..", "uploads");
+
 /*
 Create folders automatically
 */
 
 const folders = [
-  "uploads/aadhaar",
-  "uploads/farmercards",
-  "uploads/products",
+  "aadhaar",
+  "farmercards",
+  "products",
 ];
 
 folders.forEach((folder) => {
-  if (!fs.existsSync(folder)) {
-    fs.mkdirSync(folder, { recursive: true });
+  const fullPath = path.join(uploadRoot, folder);
+  if (!fs.existsSync(fullPath)) {
+    fs.mkdirSync(fullPath, { recursive: true });
   }
 });
 
@@ -25,13 +28,13 @@ Storage
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     if (file.fieldname === "aadhaarImage") {
-      cb(null, "uploads/aadhaar");
+      cb(null, path.join(uploadRoot, "aadhaar"));
     } else if (file.fieldname === "farmerCardImage") {
-      cb(null, "uploads/farmercards");
+      cb(null, path.join(uploadRoot, "farmercards"));
     } else if (file.fieldname === "productImage") {
-      cb(null, "uploads/products");
+      cb(null, path.join(uploadRoot, "products"));
     } else {
-      cb(null, "uploads");
+      cb(null, uploadRoot);
     }
   },
 

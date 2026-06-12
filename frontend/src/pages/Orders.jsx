@@ -1,46 +1,46 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
+import { useCallback, useEffect, useState } from "react";
+import API, { authHeader } from "../services/api";
 
 function Orders() {
   const [orders, setOrders] = useState([]);
 
-  useEffect(() => {
-    fetchOrders();
-  }, []);
-
-  const fetchOrders = async () => {
+  const fetchOrders = useCallback(async () => {
     try {
-      const token = localStorage.getItem("token");
-
-      const res = await axios.get(
-        "http://localhost:5000/api/order/customer",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const res = await API.get("/api/order/customer", {
+        headers: authHeader(),
+      });
 
       setOrders(res.data.orders);
-    } catch (err) {
-      console.log(err);
+    } catch {
       alert("Failed to load orders");
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchOrders();
+  }, [fetchOrders]);
 
   return (
-    <div className="container mt-4">
-      <h2>My Orders</h2>
+    <div className="container page-section">
+      <div className="page-header">
+        <div>
+          <span className="eyebrow">Purchases</span>
+          <h2>My Orders</h2>
+        </div>
+      </div>
 
       {orders.length === 0 ? (
-        <p>No orders found</p>
+        <div className="empty-state">
+          <h4>No orders found</h4>
+          <p>Your order history will appear after checkout.</p>
+        </div>
       ) : (
         orders.map((order) => (
-          <div key={order._id} className="card p-3 mb-2">
+          <div key={order._id} className="card order-row">
 
             <h5>{order.productId?.productName}</h5>
 
-            <p>Status: {order.orderStatus}</p>
+            <span className="status-pill">{order.orderStatus}</span>
 
             <p>Payment: {order.paymentStatus}</p>
 

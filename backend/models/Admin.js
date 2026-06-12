@@ -13,6 +13,7 @@ const adminSchema = new mongoose.Schema(
     password: {
       type: String,
       required: true,
+      select: false,
     },
 
     role: {
@@ -27,6 +28,12 @@ const adminSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
+    toJSON: {
+      transform: (doc, ret) => {
+        delete ret.password;
+        return ret;
+      },
+    },
   }
 );
 

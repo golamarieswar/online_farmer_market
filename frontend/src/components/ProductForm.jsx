@@ -1,6 +1,6 @@
 import { useState } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import API, { authHeader } from "../services/api";
 
 function ProductForm() {
   const navigate = useNavigate();
@@ -41,12 +41,12 @@ function ProductForm() {
     data.append("productImage", form.productImage);
 
     try {
-      const res = await axios.post(
-        "http://localhost:5000/api/product/add",
+      const res = await API.post(
+        "/api/product/add",
         data,
         {
           headers: {
-            Authorization: `Bearer ${token}`,
+            ...authHeader(),
             "Content-Type": "multipart/form-data",
           },
         }
@@ -56,16 +56,16 @@ function ProductForm() {
 
       navigate("/farmer-dashboard");
     } catch (err) {
-      console.log(err);
       alert(err.response?.data?.message || "Add Product Failed");
     }
   };
 
   return (
-    <div className="container mt-5">
+    <div className="container page-section form-page">
+      <span className="eyebrow">Inventory</span>
       <h2>Add Product</h2>
 
-      <form onSubmit={submit}>
+      <form onSubmit={submit} className="card form-card">
         <input
           name="productName"
           placeholder="Product Name"
@@ -108,7 +108,7 @@ function ProductForm() {
         />
 
         <button className="btn btn-success">
-          Add Product
+          Submit For Approval
         </button>
       </form>
     </div>

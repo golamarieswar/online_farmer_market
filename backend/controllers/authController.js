@@ -2,6 +2,10 @@ const Farmer = require("../models/Farmer");
 const Customer = require("../models/Customer");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const path = require("path");
+
+const uploadPath = (folder, file) =>
+  path.posix.join("uploads", folder, file.filename);
 
 /*
 CUSTOMER REGISTER
@@ -77,11 +81,18 @@ exports.registerFarmer = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const aadhaarImage =
-      req.files["aadhaarImage"][0].path;
+    const aadhaarFile =
+      req.files?.aadhaarImage?.[0];
 
     const farmerCardImage =
-      req.files["farmerCardImage"][0].path;
+      req.files?.farmerCardImage?.[0];
+
+    if (!aadhaarFile || !farmerCardImage) {
+      return res.status(400).json({
+        success: false,
+        message: "Aadhaar image and farmer card image are required",
+      });
+    }
 
     const farmer = await Farmer.create({
       fullName,
@@ -89,8 +100,8 @@ exports.registerFarmer = async (req, res) => {
       mobileNumber,
       password: hashedPassword,
       aadhaarNumber,
-      aadhaarImage,
-      farmerCardImage,
+      aadhaarImage: uploadPath("aadhaar", aadhaarFile),
+      farmerCardImage: uploadPath("farmercards", farmerCardImage),
       address,
     });
 
@@ -116,7 +127,7 @@ exports.loginCustomer = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const customer = await Customer.findOne({ email });
+    const customer = await Customer.findOne({ email }).select("+password");
 
     if (!customer) {
       return res.status(404).json({
@@ -169,7 +180,7 @@ exports.loginFarmer = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const farmer = await Farmer.findOne({ email });
+    const farmer = await Farmer.findOne({ email }).select("+password");
 
     if (!farmer) {
       return res.status(404).json({

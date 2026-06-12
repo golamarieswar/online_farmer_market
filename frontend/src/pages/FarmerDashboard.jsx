@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import API, { authHeader } from "../services/api";
 
 function FarmerDashboard() {
   const navigate = useNavigate();
@@ -10,9 +10,31 @@ function FarmerDashboard() {
   const [profile, setProfile] = useState(null);
   const [products, setProducts] = useState([]);
 
-  useEffect(() => {
-    console.log("TOKEN CHECK:", token);
+  const getProfile = useCallback(async () => {
+    try {
+      const res = await API.get("/api/farmer/profile", {
+        headers: authHeader(),
+      });
 
+      setProfile(res.data.farmer);
+    } catch (err) {
+      alert(err.response?.data?.message || "Failed to load profile");
+    }
+  }, []);
+
+  const getProducts = useCallback(async () => {
+    try {
+      const res = await API.get("/api/product/farmer/my-products", {
+        headers: authHeader(),
+      });
+
+      setProducts(res.data.products);
+    } catch (err) {
+      alert(err.response?.data?.message || "Failed to load products");
+    }
+  }, []);
+
+  useEffect(() => {
     if (!token) {
       alert("Please login first");
       navigate("/farmer-login");
@@ -21,76 +43,58 @@ function FarmerDashboard() {
 
     getProfile();
     getProducts();
-  }, []);
-
-  const getProfile = async () => {
-    try {
-      const res = await axios.get(
-        "http://localhost:5000/api/farmer/profile",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      setProfile(res.data.farmer);
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  const getProducts = async () => {
-    try {
-      const res = await axios.get(
-        "http://localhost:5000/api/product/farmer/my-products",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      setProducts(res.data.products);
-    } catch (err) {
-      console.log(err);
-    }
-  };
+  }, [getProducts, getProfile, navigate, token]);
 
   return (
-    <div className="container mt-4">
-      <h2>Farmer Dashboard</h2>
+    <div className="container page-section">
+      <div className="page-header">
+        <div>
+          <span className="eyebrow">Seller workspace</span>
+          <h2>Farmer Dashboard</h2>
+        </div>
+      </div>
 
       {profile && (
-        <div className="card p-3 mb-3">
-          <h5>{profile.fullName}</h5>
-          <p>{profile.email}</p>
+        <div className="profile-card mb-4">
+          <div>
+            <h5>{profile.fullName}</h5>
+            <p>{profile.email}</p>
+          </div>
+          <span className="status-pill">{profile.verificationStatus}</span>
         </div>
       )}
 
-      <button
-  className="btn btn-dark ms-2"
-  onClick={() => navigate("/farmer-orders")}
->
-  View Orders
-</button>
+      <div className="dashboard-actions">
+        <button
+          className="btn btn-primary"
+          onClick={() => navigate("/add-product")}
+        >
+          Add Product
+        </button>
 
-      <button
-        className="btn btn-primary mb-3"
-        onClick={() => navigate("/add-product")}
-      >
-        Add Product
-      </button>
+        <button
+          className="btn btn-dark"
+          onClick={() => navigate("/farmer-orders")}
+        >
+          View Orders
+        </button>
+      </div>
 
       <h4>My Products</h4>
 
       {products.length === 0 ? (
-        <p>No products found</p>
+        <div className="empty-state">
+          <h4>No products found</h4>
+          <p>Add your first product and wait for admin approval.</p>
+        </div>
       ) : (
         products.map((p) => (
-          <div key={p._id} className="card p-2 mb-2">
-            <strong>{p.productName}</strong>
-            <div>Status: {p.verificationStatus}</div>
+          <div key={p._id} className="card order-row">
+            <div>
+              <strong>{p.productName}</strong>
+              <p className="mb-0 text-muted">₹ {p.price} · Qty {p.quantity}</p>
+            </div>
+            <span className="status-pill">{p.verificationStatus}</span>
           </div>
         ))
       )}

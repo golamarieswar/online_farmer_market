@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
+import { useCallback, useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import API, { assetUrl } from "../services/api";
 
 function ProductDetails() {
   const { id } = useParams();
@@ -9,22 +9,20 @@ function ProductDetails() {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchProduct();
-  }, []);
-
-  const fetchProduct = async () => {
+  const fetchProduct = useCallback(async () => {
     try {
-      const res = await axios.get(
-        `http://localhost:5000/api/product/${id}`
-      );
+      const res = await API.get(`/api/product/${id}`);
       setProduct(res.data.product);
-    } catch (error) {
+    } catch {
       alert("Failed to load product");
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
+
+  useEffect(() => {
+    fetchProduct();
+  }, [fetchProduct]);
 
   const addToCart = () => {
     let cart = JSON.parse(localStorage.getItem("cart")) || [];
@@ -50,26 +48,31 @@ function ProductDetails() {
     navigate("/cart"); // IMPORTANT FIX
   };
 
-  if (loading) return <h3 className="container mt-5">Loading...</h3>;
-  if (!product) return <h3 className="container mt-5">Not found</h3>;
+  if (loading) return <div className="container page-section">Loading product...</div>;
+  if (!product) return <div className="container page-section">Product not found.</div>;
 
   return (
-    <div className="container mt-5">
-      <div className="card p-4">
+    <div className="container page-section">
+      <div className="product-detail">
 
         <img
-          src={`http://localhost:5000/${product.productImage}`}
-          width="250"
-          alt=""
+          src={assetUrl(product.productImage)}
+          alt={product.productName}
         />
 
-        <h2>{product.productName}</h2>
-        <p>{product.description}</p>
-        <h4>₹ {product.price}</h4>
+        <div>
+          <span className="eyebrow">{product.category}</span>
+          <h2>{product.productName}</h2>
+          <p className="lead">{product.description}</p>
+          <div className="product-meta detail-meta">
+            <strong>₹ {product.price}</strong>
+            <span>{product.quantity} in stock</span>
+          </div>
 
-        <button className="btn btn-success" onClick={addToCart}>
-          Add To Cart
-        </button>
+          <button className="btn btn-success btn-lg" onClick={addToCart}>
+            Add To Cart
+          </button>
+        </div>
 
       </div>
     </div>

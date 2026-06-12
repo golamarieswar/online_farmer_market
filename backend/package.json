@@ -4,7 +4,10 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "dev": "nodemon server.js"
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "check": "find . -path ./node_modules -prune -o -name '*.js' -print | xargs -n 1 node --check",
+    "seed:admin": "node scripts/seedAdmin.js"
   },
   "keywords": [],
   "author": "",

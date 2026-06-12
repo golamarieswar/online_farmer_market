@@ -1,7 +1,15 @@
 import AppRoutes from "./routes";
+import Navbar from "./components/Navbar";
 
 function App() {
-  return <AppRoutes />;
+  return (
+    <>
+      <Navbar />
+      <main>
+        <AppRoutes />
+      </main>
+    </>
+  );
 }
 
 export default App;

@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { assetUrl } from "../services/api";
 
 function ProductCard({ product }) {
   const navigate = useNavigate();
@@ -7,7 +8,7 @@ function ProductCard({ product }) {
     <div className="card h-100">
 
       <img
-        src={`http://localhost:5000/${product.productImage}`}
+        src={assetUrl(product.productImage)}
         className="card-img-top"
         alt={product.productName}
         height="220"

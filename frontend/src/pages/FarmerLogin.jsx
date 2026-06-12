@@ -1,6 +1,6 @@
 import { useState } from "react";
-import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
+import API from "../services/api";
 
 function FarmerLogin() {
   const navigate = useNavigate();
@@ -14,12 +14,7 @@ function FarmerLogin() {
     e.preventDefault();
 
     try {
-      const res = await axios.post(
-        "http://localhost:5000/api/auth/login/farmer",
-        form
-      );
-
-      console.log("LOGIN RESPONSE:", res.data);
+      const res = await API.post("/api/auth/login/farmer", form);
 
       const token = res.data.token;
 
@@ -29,12 +24,10 @@ function FarmerLogin() {
       }
 
       localStorage.setItem("token", token);
-
-      console.log("TOKEN SAVED:", token);
+      localStorage.setItem("role", "farmer");
 
       navigate("/farmer-dashboard");
     } catch (err) {
-      console.log(err);
       alert(
         err.response?.data?.message ||
           "Login Failed"
@@ -43,10 +36,11 @@ function FarmerLogin() {
   };
 
   return (
-    <div className="container mt-5">
+    <div className="container auth-page">
+      <span className="eyebrow">Farmer access</span>
       <h2>Farmer Login</h2>
 
-      <form onSubmit={login}>
+      <form onSubmit={login} className="card form-card">
         <input
           className="form-control mb-3"
           placeholder="Email"
@@ -71,7 +65,7 @@ function FarmerLogin() {
           }
         />
 
-        <button className="btn btn-primary">
+        <button className="btn btn-success w-100">
           Login
         </button>
       </form>

@@ -1,131 +1,109 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import API from "../services/api";
 
-function FarmerDashboard() {
+function CustomerRegister() {
   const navigate = useNavigate();
 
-  const [profile, setProfile] = useState(null);
-  const [products, setProducts] = useState([]);
+  const [form, setForm] = useState({
+    fullName: "",
+    email: "",
+    mobileNumber: "",
+    password: "",
+    noReturnPolicyAccepted: false,
+  });
 
-  const token = localStorage.getItem("token");
-
-  useEffect(() => {
-    getProfile();
-    getProducts();
-  }, []);
-
-  const getProfile = async () => {
-    try {
-      const res = await axios.get(
-        "http://localhost:5000/api/farmer/profile",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      setProfile(res.data.farmer);
-    } catch (error) {
-      console.error(error);
-      alert("Failed to load profile");
-    }
+  const handleChange = (event) => {
+    const { name, value, type, checked } = event.target;
+    setForm({
+      ...form,
+      [name]: type === "checkbox" ? checked : value,
+    });
   };
 
-  const getProducts = async () => {
-    try {
-      const res = await axios.get(
-        "http://localhost:5000/api/product/farmer/my-products",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+  const register = async (event) => {
+    event.preventDefault();
 
-      setProducts(res.data.products);
+    if (!form.noReturnPolicyAccepted) {
+      alert("Please accept the no-return policy.");
+      return;
+    }
+
+    try {
+      await API.post("/api/auth/register/customer", form);
+      alert("Customer registered successfully");
+      navigate("/customer-login");
     } catch (error) {
-      console.error(error);
-      alert("Failed to load products");
+      alert(error.response?.data?.message || "Registration failed");
     }
   };
 
   return (
-    <div className="container mt-4">
-      <h2>Farmer Dashboard</h2>
+    <div className="container auth-page">
+      <span className="eyebrow">Customer access</span>
+      <h2>Customer Registration</h2>
 
-      {profile && (
-        <div className="card p-3 mb-4">
-          <h4>{profile.fullName}</h4>
+      <form onSubmit={register} className="card form-card">
+        <input
+          className="form-control mb-3"
+          name="fullName"
+          placeholder="Full Name"
+          value={form.fullName}
+          onChange={handleChange}
+          required
+        />
 
-          <p>
-            <strong>Email:</strong>{" "}
-            {profile.email}
-          </p>
+        <input
+          className="form-control mb-3"
+          name="email"
+          placeholder="Email"
+          type="email"
+          value={form.email}
+          onChange={handleChange}
+          required
+        />
 
-          <p>
-            <strong>Mobile:</strong>{" "}
-            {profile.mobileNumber}
-          </p>
+        <input
+          className="form-control mb-3"
+          name="mobileNumber"
+          placeholder="Mobile Number"
+          value={form.mobileNumber}
+          onChange={handleChange}
+          required
+        />
 
-          <p>
-            <strong>Status:</strong>{" "}
-            {profile.verificationStatus}
-          </p>
-        </div>
-      )}
+        <input
+          className="form-control mb-3"
+          name="password"
+          placeholder="Password"
+          type="password"
+          value={form.password}
+          onChange={handleChange}
+          required
+          minLength="6"
+        />
 
-      <button
-        className="btn btn-primary mb-4"
-        onClick={() =>
-          navigate("/add-product")
-        }
-      >
-        Add Product
-      </button>
+        <label className="form-check mb-3 text-start">
+          <input
+            className="form-check-input"
+            name="noReturnPolicyAccepted"
+            type="checkbox"
+            checked={form.noReturnPolicyAccepted}
+            onChange={handleChange}
+          />
+          <span className="form-check-label ms-2">
+            I understand orders for non-perishable farm products cannot be returned.
+          </span>
+        </label>
 
-      <h4>My Products</h4>
+        <button className="btn btn-success w-100">Register</button>
+      </form>
 
-      {products.length === 0 ? (
-        <div className="alert alert-info">
-          No products added yet.
-        </div>
-      ) : (
-        products.map((product) => (
-          <div
-            key={product._id}
-            className="card p-3 mb-3"
-          >
-            <h5>{product.productName}</h5>
-
-            <p>
-              <strong>Price:</strong> ₹
-              {product.price}
-            </p>
-
-            <p>
-              <strong>Quantity:</strong>{" "}
-              {product.quantity}
-            </p>
-
-            <p>
-              <strong>Status:</strong>{" "}
-              {product.verificationStatus}
-            </p>
-
-            {product.productImage && (
-              <img
-                src={`http://localhost:5000/${product.productImage}`}
-                alt={product.productName}
-                width="200"
-              />
-            )}
-          </div>
-        ))
-      )}
+      <p className="mt-3">
+        Already have an account? <Link to="/customer-login">Login</Link>
+      </p>
     </div>
   );
 }
 
-export default FarmerDashboard;
+export default CustomerRegister;
