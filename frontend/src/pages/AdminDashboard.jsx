@@ -179,14 +179,70 @@ function AdminDashboard() {
         <div className="empty-state compact">No pending products.</div>
       ) : (
         products.map((product) => (
-          <div key={product._id} className="card review-row">
-            <div>
-              <h5>{product.productName}</h5>
-              <p>
-                Farmer: {product.farmerId?.fullName} · {product.category} · ₹ {product.price}
-              </p>
+          <div key={product._id} className="card review-row product-review-row">
+            <div className="review-content">
+              <div className="review-title-row">
+                <div>
+                  <h5>{product.productName}</h5>
+                  <p>
+                    Farmer: {product.farmerId?.fullName || "Unknown"} ·{" "}
+                    {product.category} · ₹ {product.price}
+                  </p>
+                </div>
+                <span className="status-pill">{product.verificationStatus}</span>
+              </div>
+
+              <div className="product-review-layout">
+                <a
+                  className="product-review-image"
+                  href={assetUrl(product.productImage)}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <img src={assetUrl(product.productImage)} alt={product.productName} />
+                  <span>Product Image</span>
+                </a>
+
+                <div className="detail-grid">
+                  <div>
+                    <span>Description</span>
+                    <strong>{product.description}</strong>
+                  </div>
+                  <div>
+                    <span>Category</span>
+                    <strong>{product.category}</strong>
+                  </div>
+                  <div>
+                    <span>Price</span>
+                    <strong>₹ {product.price}</strong>
+                  </div>
+                  <div>
+                    <span>Quantity</span>
+                    <strong>{product.quantity}</strong>
+                  </div>
+                  <div>
+                    <span>Availability</span>
+                    <strong>{product.isAvailable ? "Available" : "Not available"}</strong>
+                  </div>
+                  <div>
+                    <span>Submitted</span>
+                    <strong>{formatDate(product.createdAt)}</strong>
+                  </div>
+                  <div>
+                    <span>Product ID</span>
+                    <strong>{product._id}</strong>
+                  </div>
+                  <div>
+                    <span>Farmer Contact</span>
+                    <strong>
+                      {product.farmerId?.email || "No email"} ·{" "}
+                      {product.farmerId?.mobileNumber || "No mobile"}
+                    </strong>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div>
+            <div className="review-actions">
               <button
                 className="btn btn-success btn-sm me-2"
                 onClick={() => updateProduct(product._id, "approve")}
