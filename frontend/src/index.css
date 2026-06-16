@@ -322,6 +322,85 @@ img {
   color: #667166;
 }
 
+.farmer-review-row {
+  align-items: flex-start;
+}
+
+.review-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.review-title-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.detail-grid div {
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid #edf2ea;
+  border-radius: 8px;
+  background: #fbfdf9;
+}
+
+.detail-grid span,
+.document-grid span {
+  display: block;
+  color: #6d7a6b;
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.detail-grid strong {
+  display: block;
+  margin-top: 4px;
+  color: #142016;
+  overflow-wrap: anywhere;
+}
+
+.document-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(160px, 1fr));
+  gap: 12px;
+}
+
+.document-grid a {
+  display: block;
+  padding: 10px;
+  border: 1px solid #dfe7dc;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #194f23;
+  text-decoration: none;
+}
+
+.document-grid img {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  margin-bottom: 8px;
+  border-radius: 6px;
+  background: #e9efe6;
+}
+
+.review-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
 .checkout-summary,
 .form-card {
   padding: 22px;
@@ -425,6 +504,21 @@ img {
   .profile-card {
     align-items: stretch;
     flex-direction: column;
+  }
+
+  .review-title-row,
+  .review-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .detail-grid,
+  .document-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .review-actions .btn {
+    width: 100%;
   }
 
   .fulfillment-row .form-select {

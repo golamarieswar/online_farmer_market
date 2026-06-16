@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import API, { authHeader } from "../services/api";
+import API, { assetUrl, authHeader } from "../services/api";
 
 function AdminDashboard() {
   const navigate = useNavigate();
@@ -57,6 +57,15 @@ function AdminDashboard() {
     loadDashboard();
   };
 
+  const formatDate = (value) => {
+    if (!value) return "Not available";
+
+    return new Date(value).toLocaleString("en-IN", {
+      dateStyle: "medium",
+      timeStyle: "short",
+    });
+  };
+
   if (loading) {
     return <div className="container mt-5">Loading admin dashboard...</div>;
   }
@@ -99,12 +108,55 @@ function AdminDashboard() {
         <div className="empty-state compact">No pending farmers.</div>
       ) : (
         farmers.map((farmer) => (
-          <div key={farmer._id} className="card review-row">
-            <div>
-              <h5>{farmer.fullName}</h5>
-              <p>{farmer.email} · {farmer.mobileNumber}</p>
+          <div key={farmer._id} className="card review-row farmer-review-row">
+            <div className="review-content">
+              <div className="review-title-row">
+                <div>
+                  <h5>{farmer.fullName}</h5>
+                  <p>{farmer.email} · {farmer.mobileNumber}</p>
+                </div>
+                <span className="status-pill">{farmer.verificationStatus}</span>
+              </div>
+
+              <div className="detail-grid">
+                <div>
+                  <span>Aadhaar Number</span>
+                  <strong>{farmer.aadhaarNumber}</strong>
+                </div>
+                <div>
+                  <span>Address</span>
+                  <strong>{farmer.address}</strong>
+                </div>
+                <div>
+                  <span>Registered</span>
+                  <strong>{formatDate(farmer.createdAt)}</strong>
+                </div>
+                <div>
+                  <span>Farmer ID</span>
+                  <strong>{farmer._id}</strong>
+                </div>
+              </div>
+
+              <div className="document-grid">
+                <a
+                  href={assetUrl(farmer.aadhaarImage)}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <img src={assetUrl(farmer.aadhaarImage)} alt="Aadhaar document" />
+                  <span>Aadhaar Document</span>
+                </a>
+                <a
+                  href={assetUrl(farmer.farmerCardImage)}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <img src={assetUrl(farmer.farmerCardImage)} alt="Farmer card" />
+                  <span>Farmer Card</span>
+                </a>
+              </div>
             </div>
-            <div>
+            <div className="review-actions">
               <button
                 className="btn btn-success btn-sm me-2"
                 onClick={() => updateFarmer(farmer._id, "approve")}
