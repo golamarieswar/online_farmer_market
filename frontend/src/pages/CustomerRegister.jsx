@@ -92,7 +92,7 @@ function CustomerRegister() {
             onChange={handleChange}
           />
           <span className="form-check-label ms-2">
-            I understand orders for non-perishable farm products cannot be returned.
+            By registering, you agree to pay all return delivery fees.
           </span>
         </label>
 
